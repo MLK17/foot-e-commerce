@@ -1,8 +1,25 @@
-import { Container } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
+import NavBar from "../components/NavBar";
 
 const Home = () => {
-  return <Container style={{ backgroundColor: "red" }}>Home</Container>;
+  return (
+    <>
+      <NavBar />
+      <Box
+        sx={{
+          display: "flex",
+          backgroundColor: "#F5F5F5",
+          width: "100%",
+          height: "54px",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        Home
+      </Box>
+    </>
+  );
 };
 
 export default Home;
