@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   AppBar,
   Container,
@@ -21,7 +21,8 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
-
+import { useDispatch, useSelector } from "react-redux";
+import { profileUser, selectUserConnected } from "../redux/slice/UserConnected";
 
 const pages = ["Nouveautés", "Vidéo", "Photo", "Catégories", "Promotions"];
 
@@ -63,10 +64,30 @@ const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [showLoginButton, setShowLoginButton] = React.useState(true);
+  const user = useSelector(selectUserConnected);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleClickForLogin = () => {
-    navigate('/login');
+    navigate("/login");
   };
+  const handleClickForProfile = () => {
+    if (user) {
+      navigate("/profile");
+    } else {
+      console.log("No user found. Please log in.");
+    }
+  };
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (token && !user) {
+      dispatch(profileUser(token));
+    }
+  }, [dispatch, token, user]);
+  useEffect(() => {
+    setShowLoginButton(!user);
+  }, [user]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -109,23 +130,43 @@ const NavBar = () => {
           </Typography>
         </Button>
         <Divider orientation="vertical" variant="middle" flexItem />
-        <Button sx={{ color: "#111111" }} onClick={handleClickForLogin}>
-          <Typography
-            sx={{
-              display: "flex",
-              fontFamily:
-                "Helvetica Now Text Medium, Helvetica, Arial, sans-serif",
-              fontWeight: 600,
-              fontSize: "12px",
-              lineHeight: "18px",
-              textTransform: "none",
-              mr: 2,
-              ml: 1
-            }}
-          >
-            S'identifier
-          </Typography>
-        </Button>
+        {showLoginButton ? (
+          <Button sx={{ color: "#111111" }} onClick={handleClickForLogin}>
+            <Typography
+              sx={{
+                display: "flex",
+                fontFamily:
+                  "Helvetica Now Text Medium, Helvetica, Arial, sans-serif",
+                fontWeight: 600,
+                fontSize: "12px",
+                lineHeight: "18px",
+                textTransform: "none",
+                mr: 2,
+                ml: 1,
+              }}
+            >
+              S'identifier
+            </Typography>
+          </Button>
+        ) : (
+          <Button sx={{ color: "#111111" }} onClick={handleClickForProfile}>
+            <Typography
+              sx={{
+                display: "flex",
+                fontFamily:
+                  "Helvetica Now Text Medium, Helvetica, Arial, sans-serif",
+                fontWeight: 600,
+                fontSize: "12px",
+                lineHeight: "18px",
+                textTransform: "none",
+                mr: 2,
+                ml: 1,
+              }}
+            >
+              Profile
+            </Typography>
+          </Button>
+        )}
       </Box>
       <AppBar
         position="static"

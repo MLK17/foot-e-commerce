@@ -1,49 +1,38 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "../../services/User";
 
-export const initialState = {
-  error: null,
-  user: null,
-  message: "",
-  isLoading: false,
-  status: "idle",
-};
-
-export const getUserByEmail = createAsyncThunk(
-  "user",
-  async ({ email }, { rejectWithValue }) => {
-    try {
-      const response = await User.getUserByEmail(email);
-      return response.data;
-    } catch (error) {
-      if (error.response && error.response.data) {
-        return rejectWithValue({
-          message: error.response.data.message,
-          status: error.response.status,
-        });
-      } else {
-        return rejectWithValue({ message: error.toString(), status: null });
-      }
-    }
-  }
-);
+export const saveNewUser = createAsyncThunk("user", async (data) => {
+  const response = await User.postUser(data);
+  return response.data;
+});
 
 export const UserSlice = createSlice({
   name: "User",
-  initialState,
+  initialState: {
+    user: null,
+    isLoading: false,
+    error: null,
+    message: "",
+    status: "idle",
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(getUserByEmail.pending, (state) => {
+      .addCase(saveNewUser.pending, (state) => {
         state.status = "loading";
+        state.isLoading = true;
       })
-      .addCase(getUserByEmail.fulfilled, (state, action) => {
+      .addCase(saveNewUser.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.user = action.payload.user;
+        state.isLoading = false;
+        state.user = action.payload;
         state.message = action.payload.message;
+        state.error = null;
       })
-      .addCase(getUserByEmail.rejected, (state, action) => {
+      .addCase(saveNewUser.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error;
+        state.isLoading = false;
+        state.error = action.payload || "An error occurred during login";
+        state.user = null;
       });
   },
 });

@@ -10,6 +10,9 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CachedIcon from "@mui/icons-material/Cached";
+import axios from "axios";
+
+const BASE_URL = "http://127.0.0.1:8000";
 
 const PlanelUpdate = ({ email, goToFirstTab, goToSecondTab }) => {
   const [code, setCode] = React.useState("");
@@ -20,8 +23,19 @@ const PlanelUpdate = ({ email, goToFirstTab, goToSecondTab }) => {
     setShowPassword(!showPassword);
   };
 
-  const resendCode = () => {
-    console.log("Resend verification code logic here");
+  const resendCode = async () => {
+    await axios.post(`${BASE_URL}/send-verification-code`, { email });
+    alert("Verification code has been resent to your email.");
+  };
+
+  const handleSaveNewPassword = async () => {
+    const response = await axios.post(`${BASE_URL}/reset-password`, {
+      email,
+      code,
+      newPassword,
+    });
+    alert(response.data.message);
+    goToSecondTab();
   };
 
   return (
@@ -68,7 +82,7 @@ const PlanelUpdate = ({ email, goToFirstTab, goToSecondTab }) => {
         Nous avons envoyé un code à <br />
         {email}{" "}
         <span
-        onClick={goToFirstTab}
+          onClick={goToFirstTab}
           style={{
             textDecoration: "underline",
             cursor: "pointer",
@@ -135,7 +149,7 @@ const PlanelUpdate = ({ email, goToFirstTab, goToSecondTab }) => {
         }}
       >
         <Button
-        onClick={goToSecondTab}
+          onClick={goToSecondTab}
           sx={{
             width: "150px",
             backgroundColor: "#FFF",
@@ -153,6 +167,7 @@ const PlanelUpdate = ({ email, goToFirstTab, goToSecondTab }) => {
           Annuler
         </Button>
         <Button
+          onClick={handleSaveNewPassword}
           sx={{
             width: "150px",
             backgroundColor: "#000",

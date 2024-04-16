@@ -14,7 +14,14 @@ const User = {
     return axios.post(`${BASE_URL}/user`, data);
   },
   getUser(data) {
-    return axios.get(`${BASE_URL}/login`, data);
+    return axios.post(`${BASE_URL}/login`, data);
+  },
+  getOneUser(token) {
+    return axios.get(`${BASE_URL}/one-user`, {
+      headers: {
+        Authorization: token,
+      },
+    });
   },
   updatePasswordUser(data) {
     return axios.post(`${BASE_URL}/reset-password`, data);

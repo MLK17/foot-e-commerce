@@ -1,16 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Container, Box, Typography, Tabs, Tab } from "@mui/material";
 import PropTypes from "prop-types";
 import PlanelEmail from "../components/login/PlanelEmail";
 import PlanelForm from "../components/login/PlanelForm";
 import PlanelPassword from "../components/login/PlanelPassword";
 import PlanelUpdate from "../components/login/PlanelUpdate";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getUserByEmail,
-  selectError,
-  selectUserStatus,
-} from "../redux/slice/User";
+import axios from "axios";
+
+const BASE_URL = "http://127.0.0.1:8000";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -35,18 +32,6 @@ function CustomTabPanel(props) {
 const Login = () => {
   const [email, setEmail] = React.useState("");
   const [value, setValue] = React.useState(0);
-  const dispatch = useDispatch();
-  const userStatus = useSelector(selectUserStatus);
-  const errorMessage = useSelector(selectError);
-  const message = useSelector((state) => state.User.message);
-
-  useEffect(() => {
-    if (userStatus === "succeeded") {
-      console.log(message);
-    } else if (userStatus === "failed") {
-      console.log(errorMessage);
-    }
-  }, [userStatus, errorMessage, message]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -67,16 +52,28 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(getUserByEmail({ email: email }));
-    if (
-      message ===
-      "Utilisateur introuvable. Code de verification envoyé par e-mail !"
-    ) {
-      goToFormTab();
-    } else if (errorMessage === "Utilisateur existant. Connectez-vous !") {
-      goToSecondTab();
+
+    try {
+      const response = await axios.get(`${BASE_URL}/user`, {
+        headers: {
+          email: email,
+        },
+      });
+      const message = response.data.message;
+
+      if (
+        message ===
+        "Utilisateur introuvable. Code de verification envoyé par e-mail !"
+      ) {
+        goToFormTab();
+      } else if (message === "Utilisateur existant. Connectez-vous !") {
+        goToSecondTab();
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
     }
   };
+
   return (
     <Container
       sx={{

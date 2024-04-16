@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -15,15 +15,22 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import CachedIcon from "@mui/icons-material/Cached";
+import { useDispatch, useSelector } from "react-redux";
+import { saveNewUser, selectUserStatus } from "../../redux/slice/User";
+import axios from "axios";
+
+const BASE_URL = "http://127.0.0.1:8000";
 
 const PlanelForm = ({ email, goToFirstTab, goToSecondTab }) => {
-  const [code, setCode] = React.useState("");
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [dateOfBirth, setDateOfBirth] = React.useState(null);
-  const [acceptTermsOfUse, setAcceptTermsOfUse] = React.useState(false);
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [code, setCode] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState(null);
+  const [acceptTheTermsOfUse, setAcceptTheTermsOfUse] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  const status = useSelector(selectUserStatus);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -34,11 +41,46 @@ const PlanelForm = ({ email, goToFirstTab, goToSecondTab }) => {
   };
 
   const handleCheckboxChange = (event) => {
-    setAcceptTermsOfUse(event.target.checked);
+    setAcceptTheTermsOfUse(event.target.checked);
   };
 
-  const resendCode = () => {
-    console.log("Resend verification code logic here");
+  const resendCode = async () => {
+    await axios.post(`${BASE_URL}/send-verification-code`, { email });
+    alert("Verification code has been resent to your email.");
+  };
+
+  useEffect(() => {
+    if (status === "succeeded") {
+      goToSecondTab();
+    }
+    if (status === "failed") {
+      alert("La création de compte a échoué, veuillez réessayer !");
+    }
+  }, [status, goToSecondTab]);
+
+  const submitApplication = () => {
+    if (
+      !code ||
+      !firstName ||
+      !lastName ||
+      !password ||
+      !dateOfBirth ||
+      !acceptTheTermsOfUse
+    ) {
+      alert("S'il vous plait, remplissez tous les champs !");
+      return;
+    }
+
+    const userData = {
+      email,
+      code,
+      firstName,
+      lastName,
+      password,
+      dateOfBirth: dateOfBirth.format("YYYY-MM-DD"),
+      acceptTheTermsOfUse,
+    };
+    dispatch(saveNewUser(userData));
   };
   return (
     <>
@@ -186,7 +228,7 @@ const PlanelForm = ({ email, goToFirstTab, goToSecondTab }) => {
         sx={{ width: "100%", mt: 4 }}
         control={
           <Checkbox
-            checked={acceptTermsOfUse}
+            checked={acceptTheTermsOfUse}
             onChange={handleCheckboxChange}
             style={{
               color: "#000",
@@ -197,7 +239,7 @@ const PlanelForm = ({ email, goToFirstTab, goToSecondTab }) => {
         required
       />
       <Button
-        onClick={goToSecondTab}
+        onClick={submitApplication}
         sx={{
           mt: 4,
           width: "150px",

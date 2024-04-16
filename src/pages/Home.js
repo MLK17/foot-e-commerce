@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import React from "react";
 import NavBar from "../components/NavBar";
+import Product from "./Product";
 
 const Home = () => {
   return (
@@ -18,6 +19,7 @@ const Home = () => {
       >
         Home
       </Box>
+      <Product />
     </>
   );
 };
