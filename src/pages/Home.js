@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import React from "react";
 import NavBar from "../components/NavBar";
-import Product from "./Product";
+import Slide from "../components/slider/Slide";
 
 const Home = () => {
   return (
@@ -19,7 +19,7 @@ const Home = () => {
       >
         Home
       </Box>
-      <Product />
+      <Slide />
     </>
   );
 };
