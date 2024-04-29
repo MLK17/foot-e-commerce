@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { profileUser, selectUserConnected } from "../redux/slice/UserConnected";
 
-const pages = ["Nouveautés", "Vidéo", "Photo", "Catégories", "Promotions"];
+const pages = [""];
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",

@@ -1,4 +1,25 @@
 .images{
+    object-fit: cover;
+    height: 500px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 24px;
+    padding: 16px;
+    margin: 10px;
+}
+
+.imagesfav{
+    object-fit: cover;
+    height: 500px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 24px;
+    padding: 16px;
+    margin: 10px;
+}
+
+.imagesTrainer{
+    object-fit: cover;
     height: 500px;
     width: 100%;
     cursor: pointer;
